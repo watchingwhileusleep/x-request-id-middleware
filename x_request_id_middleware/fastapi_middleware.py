@@ -1,12 +1,13 @@
-from typing import Callable
 from typing import Awaitable
+from typing import Callable
+
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from .common import generate_request_id
-from .common import set_request_id
 from .common import get_request_id
+from .common import set_request_id
 from .constants import REQUEST_ID_HEADER
 
 

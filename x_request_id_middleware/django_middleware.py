@@ -1,8 +1,10 @@
 from typing import Callable
+
 from django.http import HttpRequest
 from django.http import HttpResponse
 
-from .common import get_request_id, generate_request_id
+from .common import generate_request_id
+from .common import get_request_id
 from .common import set_request_id
 from .constants import REQUEST_ID_HEADER
 

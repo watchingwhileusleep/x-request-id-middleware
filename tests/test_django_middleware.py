@@ -1,11 +1,10 @@
 import os
 
-from django.test import RequestFactory
 from django.http import HttpResponse
+from django.test import RequestFactory
 
-
-from x_request_id_middleware.django_middleware import XRequestIDMiddleware
 from x_request_id_middleware.common import get_request_id
+from x_request_id_middleware.django_middleware import XRequestIDMiddleware
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "tests.test_settings"
 
