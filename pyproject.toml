@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "x-request-id-middleware"
+version = "0.1.1"
+description = "Library to handle request ID propagation for Django and FastAPI"
+authors = ["WatchingWhileUSleep <whatchingwhileusleepx@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/watchingwhileusleep/x-request-id-middleware"
+repository = "https://github.com/watchingwhileusleep/x-request-id-middleware"
+documentation = "https://github.com/watchingwhileusleep/x-request-id-middleware?tab=readme-ov-file"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "^3.2"
+fastapi = "^0.78"
+starlette = "^0.19.1"
+sentry-sdk = "^1.16.0"
+requests = "^2.32.3"
+anyio = "^3.6.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest-django = "^4.5"
+pytest-cov = "^4.0"
+factory-boy = "^3.2"
+mypy = "^1.4"
+ruff = "^0.6.2"
+pytest = "^7.4"
+
+[tool.poetry.urls]
+homepage = "https://github.com/watchingwhileusleep/x-request-id-middleware"
+repository = "https://github.com/watchingwhileusleep/x-request-id-middleware"
+documentation = "https://github.com/watchingwhileusleep/x-request-id-middleware?tab=readme-ov-file"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
