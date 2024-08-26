@@ -4,8 +4,10 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.responses import Response
 
-from x_request_id_middleware.fastapi_middleware import FastAPIXRequestIDMiddleware
 from x_request_id_middleware.common import get_request_id
+from x_request_id_middleware.fastapi_middleware import (
+    FastAPIXRequestIDMiddleware
+)
 
 app = FastAPI()
 app.add_middleware(FastAPIXRequestIDMiddleware)

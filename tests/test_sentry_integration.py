@@ -1,6 +1,7 @@
 import pytest
 
 from sentry_sdk import Hub
+
 from x_request_id_middleware.common import set_request_id
 
 

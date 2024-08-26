@@ -1,6 +1,7 @@
 import logging
 
-from x_request_id_middleware.common import set_request_id, configure_logging
+from x_request_id_middleware.common import configure_logging
+from x_request_id_middleware.common import set_request_id
 
 
 def test_logging_with_reqeust_id(caplog):

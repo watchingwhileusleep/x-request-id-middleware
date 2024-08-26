@@ -5,7 +5,6 @@ import sentry_sdk
 from contextvars import ContextVar
 from typing import Optional
 
-
 # Context variable to store request ID
 request_id_context: ContextVar[Optional[str]] = ContextVar(
     "request_id",
