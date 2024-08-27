@@ -1,4 +1,3 @@
-import logging
 import uuid
 import sentry_sdk
 
@@ -49,26 +48,3 @@ def _add_request_id_to_sentry(request_id: str) -> None:
     if sentry_sdk.Hub.current.client:
         with sentry_sdk.configure_scope() as scope:
             scope.set_tag("request_id", request_id)
-
-
-def configure_logging() -> None:
-    """
-    Configures logging to include request ID in log messages.
-    """
-    class RequestIDLogFilter(logging.Filter):
-        """
-        Logging filter to inject the request ID into log records.
-        """
-        def filter(self, record: logging.LogRecord) -> bool:
-            record.request_id = get_request_id() or "unknown"
-            return True
-
-    logger = logging.getLogger()
-    logger.addFilter(RequestIDLogFilter())
-
-    for handler in logger.handlers:
-        handler.setFormatter(
-            logging.Formatter(
-                "%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
-            )
-        )
