@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "x-request-id-middleware"
-version = "0.1.3"
+version = "0.1.5"
 description = "Library to handle request ID propagation for Django and FastAPI"
 authors = ["WatchingWhileUSleep <whatchingwhileusleepx@gmail.com>"]
 license = "MIT"
