@@ -6,7 +6,7 @@ from starlette.responses import Response
 
 from x_request_id_middleware.common import get_request_id
 from x_request_id_middleware.fastapi_middleware import (
-    FastAPIXRequestIDMiddleware
+    FastAPIXRequestIDMiddleware,
 )
 
 app = FastAPI()
@@ -29,10 +29,12 @@ async def read_root():
 @pytest.fixture
 def client() -> TestClient:
     """
-    Fixture to initialize and return a TestClient instance for testing the FastAPI app.
+    Fixture to initialize and return a TestClient instance for testing
+    the FastAPI app.
 
-    The TestClient simulates requests to the FastAPI app, allowing testing of the
-    middleware and route handling logic without running an actual server.
+    The TestClient simulates requests to the FastAPI app, allowing testing
+    of the middleware and route handling logic without running
+    an actual server.
 
     :return: A TestClient instance for making requests to the app.
     """

@@ -62,21 +62,33 @@ pip install x-request-id-middleware
 
 ### Logging Integration
 
-This library provides a simple way to add request IDs to log messages.
+To include request IDs in your log messages, use the `configure_logging()`
+function.
+
+- If you provide a custom format, the request ID will be appended to this
+format if it's not already included.
+
+- If no format is provided, the default format will be used:
+`'%(asctime)s %(levelname)s %(name)s - %(message)s [%(request_id)s]'`.
+
 To configure logging:
 ```python
 from x_request_id_middleware.common import configure_logging
 
-configure_logging()
+# Optionally, provide a custom log format
+custom_format = "%(asctime)s %(levelname)s %(name)s - %(message)s [%(request_id)s]"
 
-# Log messages will now include request IDs:
-logging.info("This is a test log message")
+# Call configure_logging with the custom format (or leave it empty for the default format)
+configure_logging(custom_format)
 ```
 
 ### Sentry Integration
+
 If you're using Sentry for error tracking, this library can
 automatically add the request ID to your Sentry logs:
+
 1. Initialize Sentry in your project.
+
 2. The request ID will automatically be attached to Sentry events as a `request_id` tag.
     ```python
     from x_request_id_middleware import set_request_id
