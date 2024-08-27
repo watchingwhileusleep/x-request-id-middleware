@@ -32,7 +32,7 @@ pip install x-request-id-middleware
 
 2. Access the request ID in your views or any part of your application:
     ```python
-    from x_request_id_middleware import get_request_id
+    from x_request_id_middleware.common import get_request_id
     
     def some_view(request):
         request_id = get_request_id()
@@ -52,7 +52,7 @@ pip install x-request-id-middleware
 
 2. Access the request ID in your FastAPI routes:
     ```python
-    from x_request_id_middleware import get_request_id
+    from x_request_id_middleware.common import get_request_id
     
     @app.get("/")
     async def root():
@@ -73,7 +73,7 @@ format if it's not already included.
 
 To configure logging:
 ```python
-from x_request_id_middleware.common import configure_logging
+from x_request_id_middleware.logging_config import configure_logging
 
 # Optionally, provide a custom log format
 custom_format = "%(asctime)s %(levelname)s %(name)s - %(message)s [%(request_id)s]"
@@ -91,7 +91,7 @@ automatically add the request ID to your Sentry logs:
 
 2. The request ID will automatically be attached to Sentry events as a `request_id` tag.
     ```python
-    from x_request_id_middleware import set_request_id
+    from x_request_id_middleware.common import set_request_id
     
     def some_error_prone_function():
         set_request_id("my-request-id")
