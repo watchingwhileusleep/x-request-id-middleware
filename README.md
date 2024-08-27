@@ -62,24 +62,79 @@ pip install x-request-id-middleware
 
 ### Logging Integration
 
-To include request IDs in your log messages, use the `configure_logging()`
-function.
+To include request IDs in your log messages, 
+use the `XRequestIDConfigLogging` class from the 
+`x_request_id_middleware.logging_config` module.
 
-- If you provide a custom format, the request ID will be appended to this
-format if it's not already included.
+The XRequestIDConfigLogging class allows you to configure 
+logging and add request IDs to your log messages.
 
-- If no format is provided, the default format will be used:
-`'%(asctime)s %(levelname)s %(name)s - %(message)s [%(request_id)s]'`.
+Setting Up `XRequestIDConfigLogging`
 
-To configure logging:
+1. #### Import and Initialize
+
+    Import the XRequestIDConfigLogging class and create an instance of it.
+    You can optionally provide a custom log format string when initializing 
+    the instance. If no format is provided, the default format will be used.
+    ```python
+    from x_request_id_middleware.logging_config import XRequestIDConfigLogging
+    
+    # Optionally, provide a custom log format
+    custom_format = "%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+    
+    # Initialize with a custom format
+    x_request_id = XRequestIDConfigLogging(str_format=custom_format)
+    
+    # Or initialize with default format
+    x_request_id = XRequestIDConfigLogging()
+    ```
+2. #### Configure Logging
+
+    Once you have created an instance of `XRequestIDConfigLogging`, 
+    it will automatically set up the root logger and apply the formatter
+    and filter to it.
+
+    If you create new loggers using `logging.getLogger(__name__)` or similar,
+    you need to add them to the configuration by calling the `configure_logging`
+    method on your `XRequestIDConfigLogging` instance.
+    ```python
+    import logging
+   
+   from settings import x_request_id
+
+    # Example of configuring a new logger
+    logger = logging.getLogger(__name__)
+    x_request_id.configure_logging(logger)
+    ```
+   
+    The configure_logging method adds the formatter and filter to the
+    specified logger, ensuring that request IDs are included
+    in the log messages.
+
+#### Example Usage
+
+Here’s an example of how you might set up and use 
+`XRequestIDConfigLogging` in your application:
+
 ```python
-from x_request_id_middleware.logging_config import configure_logging
+import logging
 
-# Optionally, provide a custom log format
-custom_format = "%(asctime)s %(levelname)s %(name)s - %(message)s [%(request_id)s]"
+from x_request_id_middleware.logging_config import XRequestIDConfigLogging
 
-# Call configure_logging with the custom format (or leave it empty for the default format)
-configure_logging(custom_format)
+# Initialize XRequestIDConfigLogging with a custom format
+x_request_id = XRequestIDConfigLogging(
+    str_format="%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+)
+
+# Create a new logger
+logger = logging.getLogger(__name__)
+
+# Configure the new logger to include request ID in log messages
+x_request_id.configure_logging(logger)
+
+# Use the logger in your application
+logger.error("This is an error message with request ID.")
+
 ```
 
 ### Sentry Integration

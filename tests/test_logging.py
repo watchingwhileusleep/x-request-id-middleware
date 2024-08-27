@@ -4,7 +4,7 @@ import pytest
 from collections.abc import Generator
 
 from x_request_id_middleware.common import set_request_id
-from x_request_id_middleware.logging_config import configure_logging
+from x_request_id_middleware.logging_config import XRequestIDConfigLogging
 
 
 @pytest.fixture(autouse=True)
@@ -34,7 +34,9 @@ def test_logging_with_request_id_in_configure_logging(caplog):
     """
     Test that the logger includes the request ID in log messages.
     """
-    configure_logging("%(asctime)s %(levelname)s [%(request_id)s] %(message)s")
+    XRequestIDConfigLogging(
+        "%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+    )
 
     request_id = "test_request_id"
     set_request_id(request_id)
@@ -49,7 +51,7 @@ def test_logging_without_request_id_in_configure_logging(caplog):
     """
     Test that the logger includes the request ID in log messages.
     """
-    configure_logging()
+    XRequestIDConfigLogging()
 
     request_id = "test_request_id"
     set_request_id(request_id)

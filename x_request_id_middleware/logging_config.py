@@ -70,8 +70,8 @@ class OptionalXRequestIDFormatter(logging.Formatter):
         :return: A format string without request_id.
         """
         if fmt:
-            fmt = re.sub(r"\[\s*%\(\w+\)s\s*\]","", fmt).strip()
-            fmt = re.sub(r"\s+"," ", fmt)
+            fmt = re.sub(r"\[\s*%\(\w+\)s\s*\]", "", fmt).strip()
+            fmt = re.sub(r"\s+", " ", fmt)
         else:
             fmt = (
                 "%(asctime)s %(levelname)s %(name)s - %(message)s"
@@ -79,25 +79,49 @@ class OptionalXRequestIDFormatter(logging.Formatter):
         return fmt
 
 
-def configure_logging(str_format: str = None) -> None:
-    """
-    Configures logging to include request ID in log messages.
+class XRequestIDConfigLogging:
+    def __init__(self, str_format: str = None) -> None:
+        """
+        Initializes the configuration for logging with optional
+        request_id formatting.
 
-    :param str_format: Formatter string to use in log messages.
-    """
+        :param str_format: Formatter string to use in log messages.
+        """
+        self.formatter = OptionalXRequestIDFormatter(str_format)
+        self.run()
+
     class XRequestIDLogFilter(logging.Filter):
         """
         Logging filter to inject the request ID into log records.
         """
+
         def filter(self, record: logging.LogRecord) -> bool:
             record.request_id = get_request_id() or "unknown"
             return True
 
-    formatter = OptionalXRequestIDFormatter(str_format)
+    def run(self) -> None:
+        """
+        Sets up the root logger and configures it with
+        the formatter and filter.
+        """
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.INFO)
 
-    logger = logging.getLogger()
-    logger.addFilter(XRequestIDLogFilter())
+        for logger_name in logging.root.manager.loggerDict:
+            logger = logging.getLogger(logger_name)
+            self.configure_logging(logger)
 
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    def configure_logging(self, logger: logging.Logger) -> None:
+        """
+        Configures a specific logger by adding a handler and filter to it.
+
+        :param logger: The logger to configure.
+        """
+        handler = logging.StreamHandler()
+        handler.setFormatter(self.formatter)
+
+        if not any(
+            isinstance(h, logging.StreamHandler) for h in logger.handlers
+        ):
+            logger.addHandler(handler)
+        logger.addFilter(XRequestIDConfigLogging.XRequestIDLogFilter())
