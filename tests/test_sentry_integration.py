@@ -2,7 +2,7 @@ import pytest
 
 from sentry_sdk import Hub
 
-from x_request_id_middleware.common import set_request_id
+from x_request_id_middleware.common import set_x_request_id
 
 
 @pytest.fixture(autouse=True)
@@ -20,13 +20,13 @@ def sentry_init(monkeypatch):
     sentry_sdk.Hub.main.bind_client(None)
 
 
-def test_sentry_request_id_integration():
+def test_sentry_x_request_id_integration():
     """
-    Test that Sentry integration correctly sets the request ID
+    Test that Sentry integration correctly sets the x-request-ID
     in the Sentry scope.
     """
-    request_id = "test-request-id"
-    set_request_id(request_id)
+    x_request_id = "test-x-request-id"
+    set_x_request_id(x_request_id)
 
     scope = Hub.current.scope
-    assert scope._tags.get("request_id") == request_id
+    assert scope._tags.get("x_request_id") == x_request_id

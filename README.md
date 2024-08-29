@@ -6,22 +6,60 @@ incoming requests, enabling easier tracking in logs, Sentry,
 and other observability tools.
 
 ## Features
-- Request ID Propagation: Automatically generate or extract X-Request-ID headers and make them available throughout your application.
-- Django and FastAPI Support: Middleware that works out-of-the-box with Django and FastAPI.
-- Sentry Integration: Track request IDs in Sentry to trace issues by request.
-- Logging Support: Inject request IDs into logs for better traceability across services.
+- **Request ID Propagation**: Automatically generate or extract X-Request-ID headers and make them available throughout your application.
+- **Django and FastAPI Support**: Middleware that works out-of-the-box with Django and FastAPI.
+- **Sentry Integration**: Track request IDs in Sentry to trace issues by request.
+- **Logging Support**: Inject request IDs into logs for better traceability across services.
 
 ## Installation
 
- ```bash
+### Basic Installation (Core)
+
+To install the core package without any framework dependencies:
+
+```bash
 pip install x-request-id-middleware
- ```
+```
+
+Or using **Poetry**:
+
+```bash
+poetry add x-request-id-middleware
+```
+
+### Django Installation
+
+For Django support, install the package with the `django` extras:
+
+```bash
+pip install x-request-id-middleware[django]
+```
+
+Or using **Poetry**:
+
+```bash
+poetry add x-request-id-middleware -E django
+```
+
+### FastAPI Installation
+
+For FastAPI support, install the package with the `fastapi` extras:
+
+```bash
+pip install x-request-id-middleware[fastapi]
+```
+
+Or using **Poetry**:
+
+```bash
+poetry add x-request-id-middleware -E fastapi
+```
 
 ## Usage
 
 ### Django Setup
 
-1. Add the RequestIDMiddleware to your Django MIDDLEWARE settings:
+1. Add the `XRequestIDMiddleware` to your Django `MIDDLEWARE` settings:
     ```python
     MIDDLEWARE = [
         ...,
@@ -30,18 +68,27 @@ pip install x-request-id-middleware
     ]
     ```
 
-2. Access the request ID in your views or any part of your application:
+2. Accessing the Request ID:
+
+    While you can access the request ID in your views or other parts of
+   your application, please note that this is typically not necessary in a
+   real-world application. The middleware automatically handles the
+   propagation of the `X-Request-ID` header for you.
+
     ```python
-    from x_request_id_middleware.common import get_request_id
+    from x_request_id_middleware.common import get_x_request_id
     
     def some_view(request):
-        request_id = get_request_id()
-        print(f"The request ID is: {request_id}")
+        x_request_id = get_x_request_id()
+        print(f"The request ID is: {x_request_id}")
     ```
+
+    In a real-world scenario, you usually do not need to manually access
+   the `X-Request-ID` as the middleware manages this automatically.
 
 ### FastAPI Setup
 
-3. Add the FastAPIXRequestIDMiddleware to your FastAPI app:
+1. Add the `FastAPIXRequestIDMiddleware` to your FastAPI app:
     ```python
     from fastapi import FastAPI
     from x_request_id_middleware.fastapi_middleware import FastAPIXRequestIDMiddleware
@@ -50,15 +97,23 @@ pip install x-request-id-middleware
     app.add_middleware(FastAPIXRequestIDMiddleware)
     ```
 
-2. Access the request ID in your FastAPI routes:
+2. Accessing the Request ID:
+
+    Similarly, while you can access the request ID in your FastAPI routes,
+    this is generally not required in production. The middleware automatically
+    handles the `X-Request-ID` header for you.
+
     ```python
-    from x_request_id_middleware.common import get_request_id
+    from x_request_id_middleware.common import get_x_request_id
     
     @app.get("/")
     async def root():
-        request_id = get_request_id()
-        return {"request_id": request_id}
+        x_request_id = get_x_request_id()
+        return {"x_request_id": x_request_id}
     ```
+
+    In practice, the middleware ensures the `X-Request-ID` is propagated
+    properly without needing manual handling.
 
 ### Logging Integration
 
@@ -80,7 +135,7 @@ Setting Up `XRequestIDConfigLogging`
     from x_request_id_middleware.logging_config import XRequestIDConfigLogging
     
     # Optionally, provide a custom log format
-    custom_format = "%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+    custom_format = "%(asctime)s %(levelname)s [%(x_request_id)s] %(message)s"
     
     # Initialize with a custom format
     x_request_id = XRequestIDConfigLogging(str_format=custom_format)
@@ -99,8 +154,8 @@ Setting Up `XRequestIDConfigLogging`
     method on your `XRequestIDConfigLogging` instance.
     ```python
     import logging
-   
-   from settings import x_request_id
+    
+    from settings import x_request_id
 
     # Example of configuring a new logger
     logger = logging.getLogger(__name__)
@@ -123,7 +178,7 @@ from x_request_id_middleware.logging_config import XRequestIDConfigLogging
 
 # Initialize XRequestIDConfigLogging with a custom format
 x_request_id = XRequestIDConfigLogging(
-    str_format="%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+    str_format="%(asctime)s %(levelname)s [%(x_request_id)s] %(message)s"
 )
 
 # Create a new logger
@@ -139,19 +194,55 @@ logger.error("This is an error message with request ID.")
 
 ### Sentry Integration
 
-If you're using Sentry for error tracking, this library can
-automatically add the request ID to your Sentry logs:
+If you're using Sentry for error tracking, this library automatically
+adds the request ID to your Sentry logs. You don't need to manually set
+the request ID for Sentry. Here’s how it works:
 
-1. Initialize Sentry in your project.
+1. **Initialize Sentry in your project**:
 
-2. The request ID will automatically be attached to Sentry events as a `request_id` tag.
-    ```python
-    from x_request_id_middleware.common import set_request_id
+    Ensure that Sentry is initialized in your application as usual. For example:
     
-    def some_error_prone_function():
-        set_request_id("my-request-id")
-        raise Exception("An error occurred")
+    ```python
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn="your_sentry_dsn_here",
+        # Other Sentry configuration
+    )
     ```
+
+2. **Automatic Request ID Tagging**:
+
+    Once Sentry is initialized, the request ID will be automatically
+    attached to Sentry events as a `x_request_id` tag. This means you don't
+    need to call `set_request_id` manually. The middleware will handle
+    setting the request ID in the context for both Django and FastAPI,
+    and it will be picked up by Sentry.
+
+    Here’s how you would typically use the middleware in your applications:
+
+    - **For Django**:
+   
+        ```python
+        # In your Django settings.py
+        MIDDLEWARE = [
+            ...,
+            'x_request_id_middleware.django_middleware.XRequestIDMiddleware',
+            ...
+        ]
+        ```
+
+    - **For FastAPI**:
+
+        ```python
+        from fastapi import FastAPI
+        from x_request_id_middleware.fastapi_middleware import FastAPIXRequestIDMiddleware
+        
+        app = FastAPI()
+        app.add_middleware(FastAPIXRequestIDMiddleware)
+        ```
+
+    You can now rely on Sentry to automatically handle request IDs for you.
    
 ## NGINX Integration
 
@@ -165,7 +256,7 @@ in the request it passes to your application.
 Open your NGINX configuration file
 (typically located at /etc/nginx/nginx.conf or
 /etc/nginx/sites-available/default) and modify it to add the
-X-Request-ID header. You can use the $request_id variable,
+X-Request-ID header. You can use the $x_request_id variable,
 which NGINX generates for each request.
 
 Example NGINX configuration:
@@ -181,12 +272,12 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Request-ID $request_id;
+        proxy_set_header X-Request-ID $x_request_id;
     }
 }
 ```
 In this example, the X-Request-ID header is set to the value of the
-$request_id variable, which NGINX will include in requests forwarded
+$x_request_id variable, which NGINX will include in requests forwarded
 to your application.
 
 2. Restart NGINX
@@ -197,7 +288,7 @@ After updating the configuration, restart NGINX to apply the changes:
 sudo systemctl restart nginx
 ```
 
-### Verifying Request ID Propagation
+### Verifying X-Request-ID Propagation
 
 1. Send a Request
 
@@ -206,7 +297,7 @@ sudo systemctl restart nginx
 
 2. Check Application Logs
 
-    Verify that your application logs include the request ID, 
+    Verify that your application logs include the X-request-ID, 
     which will help you trace requests through your system.
 
 ---

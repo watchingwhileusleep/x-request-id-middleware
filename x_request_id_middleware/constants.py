@@ -1,3 +1,3 @@
-"""Constants related to the request ID Header."""
+"""Constants related to the x-request-ID Header."""
 
-REQUEST_ID_HEADER: str = "X-Request-ID"
+X_REQUEST_ID_HEADER: str = "X-Request-ID"

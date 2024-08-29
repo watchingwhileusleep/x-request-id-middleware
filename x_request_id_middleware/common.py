@@ -4,47 +4,47 @@ import sentry_sdk
 from contextvars import ContextVar
 from typing import Optional
 
-# Context variable to store request ID
-request_id_context: ContextVar[Optional[str]] = ContextVar(
-    "request_id",
+# Context variable to store x-request-ID
+x_request_id_context: ContextVar[Optional[str]] = ContextVar(
+    "x_request_id",
     default=None,
 )
 
 
-def get_request_id() -> Optional[str]:
+def get_x_request_id() -> Optional[str]:
     """
-    Retrieve the current request ID from the context.
+    Retrieve the current x-request-ID from the context.
 
-    :return: The current request ID if it exists, otherwise None.
+    :return: The current x-request-ID if it exists, otherwise None.
     """
-    return request_id_context.get()
+    return x_request_id_context.get()
 
 
-def set_request_id(request_id: str) -> None:
+def set_x_request_id(x_request_id: str) -> None:
     """
-    Set the current request ID in the context and add to Sentry.
+    Set the current x-request-ID in the context and add to Sentry.
 
-    :param request_id: The request ID to set.
+    :param x_request_id: The x-request-ID to set.
     """
-    request_id_context.set(request_id)
-    _add_request_id_to_sentry(request_id)
+    x_request_id_context.set(x_request_id)
+    _add_x_request_id_to_sentry(x_request_id)
 
 
-def generate_request_id() -> str:
+def generate_x_request_id() -> str:
     """
-    Generates a new UUID as a request ID.
+    Generates a new UUID as a x-request-ID.
 
-    :return: The generated request ID.
+    :return: The generated x-request-ID.
     """
     return str(uuid.uuid4())
 
 
-def _add_request_id_to_sentry(request_id: str) -> None:
+def _add_x_request_id_to_sentry(x_request_id: str) -> None:
     """
-    Add request ID to the Sentry context if Sentry is initialized.
+    Add x-request-ID to the Sentry context if Sentry is initialized.
 
-    :param request_id: The request ID to add to Sentry's context.
+    :param x_request_id: The x-request-ID to add to Sentry's context.
     """
     if sentry_sdk.Hub.current.client:
         with sentry_sdk.configure_scope() as scope:
-            scope.set_tag("request_id", request_id)
+            scope.set_tag("x_request_id", x_request_id)

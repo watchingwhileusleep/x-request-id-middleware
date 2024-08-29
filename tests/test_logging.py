@@ -3,7 +3,7 @@ import pytest
 
 from collections.abc import Generator
 
-from x_request_id_middleware.common import set_request_id
+from x_request_id_middleware.common import set_x_request_id
 from x_request_id_middleware.logging_config import XRequestIDConfigLogging
 
 
@@ -30,44 +30,56 @@ def reset_logging() -> Generator[None, None, None]:
     root_logger.filters = original_filters
 
 
-def test_logging_with_request_id_in_configure_logging(caplog):
+def test_logging_with_x_request_id_in_configure_logging(caplog):
     """
-    Test that the logger includes the request ID in log messages.
+    Test that the logger includes the x-request-ID in log messages.
     """
-    XRequestIDConfigLogging(
-        "%(asctime)s %(levelname)s [%(request_id)s] %(message)s"
+    x_request_id_settings = XRequestIDConfigLogging(
+        "%(asctime)s %(levelname)s [%(x_request_id)s] %(message)s"
     )
 
-    request_id = "test_request_id"
-    set_request_id(request_id)
+    logger = logging.getLogger(__name__)
+    x_request_id_settings.configure_logging(logger)
+
+    x_request_id = "test_x_request_id"
+    set_x_request_id(x_request_id)
 
     with caplog.at_level(logging.INFO):
-        logging.info("This is a test log message")
+        logger.info("This is a test log message")
 
-    assert any(record.request_id == request_id for record in caplog.records)
+    assert any(
+        record.x_request_id == x_request_id for record in caplog.records
+    )
 
 
-def test_logging_without_request_id_in_configure_logging(caplog):
+def test_logging_without_x_request_id_in_configure_logging(caplog):
     """
-    Test that the logger includes the request ID in log messages.
+    Test that the logger includes the x-request-ID in log messages.
     """
-    XRequestIDConfigLogging()
+    x_request_id_settings = XRequestIDConfigLogging()
 
-    request_id = "test_request_id"
-    set_request_id(request_id)
+    logger = logging.getLogger(__name__)
+    x_request_id_settings.configure_logging(logger)
+
+    x_request_id = "test_x_request_id"
+    set_x_request_id(x_request_id)
 
     with caplog.at_level(logging.INFO):
-        logging.info("This is a test log message")
+        logger.info("This is a test log message")
 
-    assert any(record.request_id == request_id for record in caplog.records)
+    assert any(
+        record.x_request_id == x_request_id for record in caplog.records
+    )
 
 
 def test_logging_without_configure_logging(caplog):
     """
-    Test that the logger does not include request ID if configure_logging
+    Test that the logger does not include x-request-ID if configure_logging
     is not called.
     """
     with caplog.at_level(logging.INFO):
         logging.info("This is a test log message")
 
-    assert not any(hasattr(record, "request_id") for record in caplog.records)
+    assert not any(
+        hasattr(record, "x_request_id") for record in caplog.records
+    )
