@@ -32,7 +32,7 @@ poetry add x-request-id-middleware
 For Django support, install the package with the `django` extras:
 
 ```bash
-pip install x-request-id-middleware[django]
+pip install "x-request-id-middleware[django]"
 ```
 
 Or using **Poetry**:
@@ -46,7 +46,7 @@ poetry add x-request-id-middleware -E django
 For FastAPI support, install the package with the `fastapi` extras:
 
 ```bash
-pip install x-request-id-middleware[fastapi]
+pip install "x-request-id-middleware[fastapi]"
 ```
 
 Or using **Poetry**:
